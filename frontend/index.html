@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Pulse</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   
+
+    <div class="container">
+
+    <h1>Page Pulse</h1>
+
+    <input type="text" id="url" placeholder="Enter Website URL">
+
+    <button onclick="analyze()">Analyze</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function analyze() {
+
+    const button = document.querySelector("button");
+    button.disabled = true;
+    button.textContent = "Analyzing...";
+
+    try {
+
+        const url = document.getElementById("url").value;
+
+        const response = await fetch("http://localhost:5000/audit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            document.getElementById("result").innerHTML = `
+                <p style="color:red;"><strong>${data.error}</strong></p>
+            `;
+            return;
+        }
+
+        document.getElementById("result").innerHTML = `
+            <h3>Audit Report</h3>
+
+            <p><strong>HTTP Status:</strong> ${data.status}</p>
+            <p><strong>Response Time:</strong> ${data.responseTime}</p>
+            <p><strong>Page Title:</strong> ${data.title}</p>
+            <p><strong>Meta Description:</strong> ${data.metaDescription}</p>
+            <p><strong>H1 Count:</strong> ${data.h1Count}</p>
+            <p><strong>Images without Alt:</strong> ${data.imagesWithoutAlt}</p>
+            <p><strong>Word Count:</strong> ${data.wordCount}</p>
+        `;
+
+    } catch (error) {
+
+        document.getElementById("result").innerHTML = `
+            <p style="color:red;"><strong>Something went wrong.</strong></p>
+        `;
+
+    } finally {
+
+        // This always runs
+        button.disabled = false;
+        button.textContent = "Analyze";
+
+    }
+}
+    </script>
+
+</body>
+<footer>
+    Built for Digital Heroes Training Task
+    </a>
+</footer>
+</html>
